@@ -47,6 +47,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 :focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
 .skip-link { position: fixed; left: 16px; top: -80px; z-index: 1000; padding: 12px 16px; color: var(--ink); background: #fff; }
 .skip-link:focus { top: 16px; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 .page-shell { width: min(1160px, calc(100% - 40px)); margin-inline: auto; }
 .chrome-text {
   color: transparent;
@@ -273,8 +274,7 @@ h1, h2, h3 { font-family: var(--display); text-wrap: balance; }
 .footer-grid p { margin: 0; color: var(--muted); font-size: 13px; text-align: center; }
 .footer-grid small { grid-column: 1 / -1; color: var(--faint); font: 400 10px var(--mono); }
 .social-links { display: flex; gap: 9px; }
-.social-links a { width: 38px; height: 38px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 50%; }
-.social-links a:hover { border-color: var(--red); }
+.social-placeholder { width: 38px; height: 38px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 50%; color: var(--faint); }
 .social-links svg { width: 17px; }
 
 .intro { position: fixed; inset: 0; z-index: 999; display: grid; place-items: center; overflow: hidden; background: #050507; animation: intro-out .55s 2.25s ease forwards; }

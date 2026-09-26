@@ -11,7 +11,9 @@ import {
   Instagram,
   Menu,
   MessageCircle,
+  Pause,
   PartyPopper,
+  Play,
   Send,
   Share2,
   ShoppingBag,
@@ -135,20 +137,37 @@ const ideaCards = [
 
 function App() {
   const location = useLocation();
-  const [showIntro, setShowIntro] = useState(() => !sessionStorage.getItem('fyp-intro-seen'));
+  const [showIntro, setShowIntro] = useState(
+    () =>
+      !window.matchMedia('(prefers-reduced-motion: reduce)').matches &&
+      !sessionStorage.getItem('fyp-intro-seen'),
+  );
 
   useEffect(() => {
     if (!showIntro) return undefined;
     const timer = window.setTimeout(() => {
       sessionStorage.setItem('fyp-intro-seen', 'true');
       setShowIntro(false);
+      window.setTimeout(() => document.querySelector('.wordmark')?.focus(), 0);
     }, 2700);
     return () => window.clearTimeout(timer);
   }, [showIntro]);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
-  }, [location.pathname]);
+    const section = new URLSearchParams(location.search).get('section');
+    if (section) {
+      window.setTimeout(() => document.getElementById(section)?.scrollIntoView(), 0);
+    }
+    const title = location.pathname.startsWith('/work/')
+      ? `${caseStudies[location.pathname.split('/').pop()]?.title || 'Work'} | FYP Events`
+      : location.pathname === '/work'
+        ? 'Selected Work | FYP Events'
+        : location.pathname === '/quote'
+          ? 'Book a Consultation | FYP Events'
+          : 'FYP Events | Made for your page. Built to go viral.';
+    document.title = title;
+  }, [location.pathname, location.search]);
 
   useEffect(() => {
     const items = document.querySelectorAll('[data-reveal]');
@@ -169,7 +188,15 @@ function App() {
       <a className="skip-link" href="#main-content">
         Skip to content
       </a>
-      {showIntro && <Intro onSkip={() => setShowIntro(false)} />}
+      {showIntro && (
+        <Intro
+          onSkip={() => {
+            sessionStorage.setItem('fyp-intro-seen', 'true');
+            setShowIntro(false);
+            window.setTimeout(() => document.querySelector('.wordmark')?.focus(), 0);
+          }}
+        />
+      )}
       <SiteHeader />
       <main id="main-content">
         <Routes>
@@ -186,14 +213,25 @@ function App() {
 }
 
 function Intro({ onSkip }) {
+  const skipRef = useRef(null);
+
+  useEffect(() => {
+    skipRef.current?.focus();
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') onSkip();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onSkip]);
+
   return (
-    <div className="intro" role="dialog" aria-label="FYP Events introduction">
-      <button className="intro-skip" type="button" onClick={onSkip}>
+    <div className="intro" role="dialog" aria-modal="true" aria-labelledby="intro-title">
+      <button ref={skipRef} className="intro-skip" type="button" onClick={onSkip}>
         Skip intro
       </button>
       <div className="intro-stage" aria-hidden="true">
         <span className="intro-kicker">A Makayla production</span>
-        <div className="intro-word">
+        <div className="intro-word" id="intro-title">
           <span>F</span>
           <span>Y</span>
           <span>P</span>
@@ -207,12 +245,25 @@ function Intro({ onSkip }) {
 
 function SiteHeader() {
   const [open, setOpen] = useState(false);
+  const menuButtonRef = useRef(null);
   const links = [
     { to: '/', label: 'Home' },
     { to: '/work', label: 'Work' },
-    { to: '/#services', label: 'Services' },
-    { to: '/#about', label: 'About' },
+    { to: '/?section=services', label: 'Services' },
+    { to: '/?section=about', label: 'About' },
   ];
+
+  useEffect(() => {
+    if (!open) return undefined;
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        setOpen(false);
+        menuButtonRef.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [open]);
 
   return (
     <header className="site-header">
@@ -223,22 +274,17 @@ function SiteHeader() {
           <small>NYC</small>
         </Link>
         <nav className={`nav-links ${open ? 'is-open' : ''}`} aria-label="Main navigation">
-          {links.map((link) =>
-            link.to.includes('#') ? (
-              <a key={link.label} href={link.to} onClick={() => setOpen(false)}>
-                {link.label}
-              </a>
-            ) : (
-              <NavLink key={link.label} to={link.to} onClick={() => setOpen(false)}>
-                {link.label}
-              </NavLink>
-            ),
-          )}
+          {links.map((link) => (
+            <NavLink key={link.label} to={link.to} onClick={() => setOpen(false)}>
+              {link.label}
+            </NavLink>
+          ))}
           <Link className="button button-primary nav-cta" to="/quote" onClick={() => setOpen(false)}>
             Book a consultation
           </Link>
         </nav>
         <button
+          ref={menuButtonRef}
           className="menu-button"
           type="button"
           aria-label={open ? 'Close navigation' : 'Open navigation'}
@@ -302,14 +348,17 @@ function Hero() {
 
 function EventDeck() {
   const [active, setActive] = useState(0);
-  const paused = useRef(false);
+  const [userPaused, setUserPaused] = useState(false);
+  const hoverPaused = useRef(false);
 
   useEffect(() => {
     const timer = window.setInterval(() => {
-      if (!paused.current) setActive((current) => (current + 1) % eventDeck.length);
+      if (!hoverPaused.current && !userPaused) {
+        setActive((current) => (current + 1) % eventDeck.length);
+      }
     }, 4000);
     return () => window.clearInterval(timer);
-  }, []);
+  }, [userPaused]);
 
   const move = (direction) => {
     setActive((current) => (current + direction + eventDeck.length) % eventDeck.length);
@@ -319,12 +368,12 @@ function EventDeck() {
     <div
       className="event-deck-wrap"
       data-reveal
-      onMouseEnter={() => { paused.current = true; }}
-      onMouseLeave={() => { paused.current = false; }}
-      onFocus={() => { paused.current = true; }}
-      onBlur={() => { paused.current = false; }}
+      onMouseEnter={() => { hoverPaused.current = true; }}
+      onMouseLeave={() => { hoverPaused.current = false; }}
+      onFocus={() => { hoverPaused.current = true; }}
+      onBlur={() => { hoverPaused.current = false; }}
     >
-      <div className="event-deck" aria-live="polite">
+      <div className="event-deck">
         {eventDeck.map((event, index) => {
           const offset = (index - active + eventDeck.length) % eventDeck.length;
           return (
@@ -350,6 +399,14 @@ function EventDeck() {
           <ArrowLeft aria-hidden="true" />
         </button>
         <span>{String(active + 1).padStart(2, '0')} / {String(eventDeck.length).padStart(2, '0')}</span>
+        <button
+          type="button"
+          aria-label={userPaused ? 'Resume rotating event photos' : 'Pause rotating event photos'}
+          aria-pressed={userPaused}
+          onClick={() => setUserPaused((current) => !current)}
+        >
+          {userPaused ? <Play aria-hidden="true" /> : <Pause aria-hidden="true" />}
+        </button>
         <button type="button" aria-label="Next event" onClick={() => move(1)}>
           <ArrowRight aria-hidden="true" />
         </button>
@@ -761,8 +818,12 @@ function SiteFooter() {
         <Link className="wordmark" to="/"><span className="chrome-text">FYP</span><span>EVENTS</span></Link>
         <p>New York City · Made for your page. Built to go viral.</p>
         <div className="social-links">
-          <a href="#instagram-pending" aria-label="Instagram link coming soon"><Instagram aria-hidden="true" /></a>
-          <a href="#tiktok-pending" aria-label="TikTok link coming soon"><Share2 aria-hidden="true" /></a>
+          <span className="social-placeholder">
+            <Instagram aria-hidden="true" /><span className="sr-only">Instagram link coming soon</span>
+          </span>
+          <span className="social-placeholder">
+            <Share2 aria-hidden="true" /><span className="sr-only">TikTok link coming soon</span>
+          </span>
         </div>
         <small>© 2026 FYP Events. All rights reserved.</small>
       </div>
