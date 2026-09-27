@@ -16,6 +16,8 @@ import {
 } from 'lucide-react';
 import { Link, NavLink, Route, Routes, useLocation } from 'react-router-dom';
 
+const bookingUrl = 'https://calendly.com/makayla-fypeventsnyc/30min';
+
 const galleryImages = Array.from({ length: 12 }, (_, index) => {
   const fileName = `gallery-${String(index + 1).padStart(2, '0')}.webp`;
   return {
@@ -193,9 +195,15 @@ function SiteHeader() {
               {link.label}
             </NavLink>
           ))}
-          <Link className="button button-primary nav-cta" to="/quote" onClick={closeMenu}>
+          <a
+            className="button button-primary nav-cta"
+            href={bookingUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={closeMenu}
+          >
             Book a consultation
-          </Link>
+          </a>
         </nav>
         <button
           ref={menuButtonRef}
@@ -325,9 +333,14 @@ function Hero() {
           <Link className="button button-primary" to="/quote">
             Get a quote
           </Link>
-          <Link className="button button-secondary" to="/quote">
+          <a
+            className="button button-secondary"
+            href={bookingUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             Book a consultation
-          </Link>
+          </a>
         </div>
         <div className="producer-credit">
           <div className="producer-mark chrome-border">
@@ -516,9 +529,14 @@ function OfferSection() {
                 <li key={item}><Check aria-hidden="true" /> {item}</li>
               ))}
             </ul>
-            <Link className="button button-primary" to="/quote">
+            <a
+              className="button button-primary"
+              href={bookingUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               Book the consult <ArrowUpRight aria-hidden="true" />
-            </Link>
+            </a>
           </div>
         </div>
         <div className="why-grid">
