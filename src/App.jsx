@@ -3,137 +3,36 @@ import {
   ArrowLeft,
   ArrowRight,
   ArrowUpRight,
-  CalendarDays,
   Camera,
   Check,
-  ChevronDown,
-  CirclePlay,
   Instagram,
   Menu,
-  MessageCircle,
   Pause,
-  PartyPopper,
   Play,
   Send,
-  Share2,
-  ShoppingBag,
   Sparkles,
-  Star,
-  Users,
   X,
   Zap,
 } from 'lucide-react';
-import { Link, NavLink, Route, Routes, useLocation, useParams } from 'react-router-dom';
+import { Link, NavLink, Route, Routes, useLocation } from 'react-router-dom';
 
-const eventDeck = [
-  {
-    title: 'Love Island: Sapphic Edition',
-    detail: 'Bombshell entrances. Live votes. One finale.',
-    label: 'Live competition',
-    className: 'deck-love-island',
-    fileName: 'love-island-01.webp',
-  },
-  {
-    title: 'Pop the Balloon',
-    detail: 'Matchmaking with a very public pop.',
-    label: 'Live matchmaking',
-    className: 'deck-balloon',
-    fileName: 'pop-the-balloon-01.webp',
-  },
-  {
-    title: 'Ask A Masc',
-    detail: 'Audience questions. Unfiltered answers.',
-    label: 'Comedy panel',
-    className: 'deck-ask-a-masc',
-    fileName: 'ask-a-masc-01.webp',
-  },
-];
+const galleryImages = Array.from({ length: 12 }, (_, index) => {
+  const fileName = `gallery-${String(index + 1).padStart(2, '0')}.webp`;
+  return {
+    fileName,
+    image: `${import.meta.env.BASE_URL}images/${fileName}`,
+    alt: `Guests enjoying an FYP Events production, photo ${index + 1}`,
+  };
+});
 
-const caseStudies = {
-  'love-island': {
-    title: 'Love Island: Sapphic Edition',
-    type: 'Live reality dating competition',
-    location: 'Three Dollar Bill, Brooklyn',
-    date: 'August 2026',
-    moment: 'Bombshell entrances and live audience voting into a finale.',
-    summary:
-      'A familiar reality-TV format rebuilt for a live queer audience, complete with casting, challenges, audience decisions and a final couple.',
-    produced: ['Casting flow', 'Run-of-show', 'Cue cards', 'Contractor agreements', 'Sponsorship deck'],
-    className: 'deck-love-island',
-  },
-  'pop-the-balloon': {
-    title: 'Pop the Balloon',
-    type: 'Live matchmaking show',
-    location: 'New York City',
-    date: 'Portfolio archive',
-    moment: 'Contestants pop to reject, live, in front of the room.',
-    summary:
-      'A fast, funny matchmaking format where every choice is immediate, visible and built for the audience reaction shot.',
-    produced: ['Format design', 'Casting flow', 'Host beats', 'Run-of-show', 'Audience experience'],
-    className: 'deck-balloon',
-  },
-  'ask-a-masc': {
-    title: 'Ask A Masc',
-    type: 'Comedy panel',
-    location: 'New York City',
-    date: 'Portfolio archive',
-    moment: 'Audience questions, unfiltered answers, live.',
-    summary:
-      'A direct-to-audience comedy panel designed around candid questions, sharp personalities and highly clippable answers.',
-    produced: ['Panel format', 'Question flow', 'Host beats', 'Stage management', 'Content moments'],
-    className: 'deck-ask-a-masc',
-  },
-};
-
-const services = [
-  {
-    title: 'Live shows',
-    copy: 'Interactive events pulled from trending TV and media formats.',
-    icon: CirclePlay,
-  },
-  {
-    title: 'Parties',
-    copy: 'Celebrations with a plot, not just a playlist.',
-    icon: PartyPopper,
-  },
-  {
-    title: 'Pop-ups',
-    copy: 'Surprise, one-day-only signature offerings.',
-    icon: ShoppingBag,
-  },
-  {
-    title: 'Brand activations',
-    copy: 'Interactive product placements with clippable moments.',
-    icon: Star,
-  },
-];
-
-const ideaCards = [
-  {
-    industry: 'Influencer',
-    title: 'Creator brand launch',
-    moment: 'Followers vote live on the finale reveal, streamed from the room.',
-    number: '01',
-  },
-  {
-    industry: 'Consumer products',
-    title: 'Game-show pop-up',
-    moment: 'Guests play to win product; the grand prize lands on camera.',
-    number: '02',
-  },
-  {
-    industry: 'Tech + media',
-    title: 'Launch or live podcast',
-    moment: 'The audience decides the twist; the demo becomes the final round.',
-    number: '03',
-  },
-  {
-    industry: 'Fashion',
-    title: 'Collection launch',
-    moment: 'The crowd casts the runway live, or the sale becomes an auction show.',
-    number: '04',
-  },
-];
+function shuffled(items) {
+  const result = [...items];
+  for (let index = result.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    [result[index], result[swapIndex]] = [result[swapIndex], result[index]];
+  }
+  return result;
+}
 
 function App() {
   const location = useLocation();
@@ -159,13 +58,9 @@ function App() {
     if (section) {
       window.setTimeout(() => document.getElementById(section)?.scrollIntoView(), 0);
     }
-    const title = location.pathname.startsWith('/work/')
-      ? `${caseStudies[location.pathname.split('/').pop()]?.title || 'Work'} | FYP Events`
-      : location.pathname === '/work'
-        ? 'Selected Work | FYP Events'
-        : location.pathname === '/quote'
-          ? 'Book a Consultation | FYP Events'
-          : 'FYP Events | Made for your page. Built to go viral.';
+    const title = location.pathname === '/quote'
+      ? 'Get a Quote | FYP Events'
+      : 'FYP Events | Made for your page. Built to go viral.';
     document.title = title;
   }, [location.pathname, location.search]);
 
@@ -201,8 +96,6 @@ function App() {
       <main id="main-content">
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/work" element={<WorkPage />} />
-          <Route path="/work/:slug" element={<CaseStudyPage />} />
           <Route path="/quote" element={<QuotePage />} />
           <Route path="*" element={<HomePage />} />
         </Routes>
@@ -219,23 +112,23 @@ function Intro({ onSkip }) {
     skipRef.current?.focus();
     const handleKeyDown = (event) => {
       if (event.key === 'Escape') onSkip();
+      if (event.key === 'Tab') {
+        event.preventDefault();
+        skipRef.current?.focus();
+      }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onSkip]);
 
   return (
-    <div className="intro" role="dialog" aria-modal="true" aria-labelledby="intro-title">
+    <div className="intro" role="dialog" aria-modal="true" aria-label="FYP Events introduction">
       <button ref={skipRef} className="intro-skip" type="button" onClick={onSkip}>
         Skip intro
       </button>
       <div className="intro-stage" aria-hidden="true">
         <span className="intro-kicker">A Makayla production</span>
-        <div className="intro-word" id="intro-title">
-          <span>F</span>
-          <span>Y</span>
-          <span>P</span>
-        </div>
+        <div className="intro-word"><span>FYP</span></div>
         <p>Made for your page.</p>
         <div className="intro-flash" />
       </div>
@@ -248,7 +141,6 @@ function SiteHeader() {
   const menuButtonRef = useRef(null);
   const links = [
     { to: '/', label: 'Home' },
-    { to: '/work', label: 'Work' },
     { to: '/?section=services', label: 'Services' },
     { to: '/?section=about', label: 'About' },
   ];
@@ -265,6 +157,12 @@ function SiteHeader() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [open]);
 
+  const closeMenu = () => {
+    if (!open) return;
+    setOpen(false);
+    window.setTimeout(() => menuButtonRef.current?.focus(), 0);
+  };
+
   return (
     <header className="site-header">
       <div className="nav-shell">
@@ -273,13 +171,13 @@ function SiteHeader() {
           <span>EVENTS</span>
           <small>NYC</small>
         </Link>
-        <nav className={`nav-links ${open ? 'is-open' : ''}`} aria-label="Main navigation">
+        <nav id="main-navigation" className={`nav-links ${open ? 'is-open' : ''}`} aria-label="Main navigation">
           {links.map((link) => (
-            <NavLink key={link.label} to={link.to} onClick={() => setOpen(false)}>
+            <NavLink key={link.label} to={link.to} end={link.to === '/'} onClick={closeMenu}>
               {link.label}
             </NavLink>
           ))}
-          <Link className="button button-primary nav-cta" to="/quote" onClick={() => setOpen(false)}>
+          <Link className="button button-primary nav-cta" to="/quote" onClick={closeMenu}>
             Book a consultation
           </Link>
         </nav>
@@ -289,6 +187,7 @@ function SiteHeader() {
           type="button"
           aria-label={open ? 'Close navigation' : 'Open navigation'}
           aria-expanded={open}
+          aria-controls="main-navigation"
           onClick={() => setOpen((current) => !current)}
         >
           {open ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
@@ -302,15 +201,94 @@ function HomePage() {
   return (
     <>
       <Hero />
-      <ServiceSection />
-      <SocialProof />
-      <IdeaSection />
+      <WhyFypSection />
       <OfferSection />
-      <ProcessSection />
+      <QuoteCalculator />
       <AboutSection />
       <PortfolioPreview />
-      <QuoteSection compact />
+      <InquirySection />
     </>
+  );
+}
+
+function WhyFypSection() {
+  const process = [
+    {
+      key: 'Ideate',
+      title: 'Start from the feed.',
+      copy: 'We turn the content, media and trends your audience already loves into dynamic event themes and interactions.',
+      stat: '#1',
+      proof: 'search destination for Gen Z is social media, including TikTok and Instagram',
+      source: 'Sprout Social, 2025',
+    },
+    {
+      key: 'Implement',
+      title: 'Bring the concept to life.',
+      copy: 'We plan the event from start to finish, including on-site operations, contractors, vendors and media coverage.',
+      stat: '61%',
+      proof: 'of consumers are more inclined to buy after a brand event',
+      source: 'EventTrack 2026',
+    },
+    {
+      key: 'Influence',
+      title: 'Generate buzz.',
+      copy: 'Generate organic, user-created content that keeps engagement going after the event, plus polished recap content from our content team.',
+      stat: '90%',
+      proof: 'of Gen Z say social content influenced them to make a purchase',
+      source: 'Sprout Social, 2025',
+    },
+  ];
+  const audiences = [
+    ['Influencers', 'Launch party, birthday party, brand activation, fan meet-up'],
+    ['Consumer products', 'Brand launch, product giveaway, sampling pop-up, retail pop-up'],
+    ['Tech & media', 'Product launch, app launch party, live podcast taping, premiere'],
+    ['Fashion', 'Collection launch, runway show, sample sale, store opening'],
+  ];
+
+  return (
+    <section className="why-fyp page-shell" id="services">
+      <div className="why-fyp-intro" data-reveal>
+        <div className="eyebrow">Why FYP Events</div>
+        <h2>We don't do <span>dull</span> or <span>basic.</span></h2>
+      </div>
+
+      <h3 className="process-label" data-reveal>Our creative process</h3>
+      <div className="why-method">
+        {process.map((step, index) => (
+          <article className="why-step" key={step.key} data-reveal style={{ '--delay': `${index * 90}ms` }}>
+            <span className="why-step-key">0{index + 1} · {step.key}</span>
+            <h3>{step.title}</h3>
+            <p>{step.copy}</p>
+            <div className={`why-proof ${step.stat ? '' : 'is-text-only'}`}>
+              {step.stat && <strong className="chrome-text">{step.stat}</strong>}
+              <span>{step.proof}</span>
+              <cite>{step.source}</cite>
+            </div>
+          </article>
+        ))}
+      </div>
+      <p className="benchmark-note">Industry benchmarks, not FYP Events results.</p>
+
+      <div className="tailored-panel" data-reveal>
+        <div className="tailored-heading">
+          <div className="eyebrow">Who it’s for</div>
+          <h2>Tailored events, personally produced.</h2>
+          <p>For small and mid-sized brands and influencers in NYC.</p>
+        </div>
+        <div className="tailored-table">
+          <h3>What we make</h3>
+          <ul>
+            {audiences.map(([audience, examples]) => (
+              <li key={audience}>
+                <strong>{audience}</strong>
+                <span>{examples}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+    </section>
   );
 }
 
@@ -318,50 +296,80 @@ function Hero() {
   return (
     <section className="hero page-shell">
       <div className="hero-copy" data-reveal>
-        <div className="eyebrow"><span className="live-dot" /> NYC event production</div>
+        <div className="eyebrow"><span className="live-dot" /> A New York City event production company</div>
         <h1>
           <span className="chrome-text">Made for your page.</span>
           <br />
           Built to go <span className="signal-text">viral.</span>
         </h1>
         <p className="hero-lede">
-          NYC-based event production for influencers and brands that want to stay trendy.
+          We turn what's trending into live events and moments that are meant to go viral.
         </p>
         <div className="button-row">
           <Link className="button button-primary" to="/quote">
-            Book a consultation <ArrowUpRight aria-hidden="true" />
+            Get a quote
           </Link>
-          <Link className="button button-secondary" to="/work">
-            See the work
+          <Link className="button button-secondary" to="/quote">
+            Book a consultation
           </Link>
         </div>
-        <p className="byline">By Makayla · Full service, concept to finale</p>
+        <div className="producer-credit">
+          <div className="producer-mark chrome-border">
+            <img
+              src={`${import.meta.env.BASE_URL}images/makayla-headshot-square.webp`}
+              alt="Makayla, producer of FYP Events"
+            />
+          </div>
+          <div className="producer-copy">
+            <strong>Full-service party &amp; event production company</strong>
+            <span>Produced by <b>Makayla</b><i aria-label="Verified producer">✦</i></span>
+          </div>
+        </div>
       </div>
       <EventDeck />
-      <div className="hero-marquee" aria-hidden="true">
-        <span>LIVE SHOWS</span><i>✦</i><span>POP-UPS</span><i>✦</i><span>PARTIES</span><i>✦</i>
-        <span>BRAND ACTIVATIONS</span><i>✦</i><span>LIVE SHOWS</span><i>✦</i>
-      </div>
     </section>
   );
 }
 
 function EventDeck() {
+  const [deckImages] = useState(() => shuffled(galleryImages));
   const [active, setActive] = useState(0);
   const [userPaused, setUserPaused] = useState(false);
   const hoverPaused = useRef(false);
+  const pointerStartY = useRef(null);
+  const pageCount = 4;
+  const feedPages = Array.from({ length: pageCount }, (_, pageIndex) =>
+    deckImages.slice(pageIndex * 3, pageIndex * 3 + 3),
+  );
 
   useEffect(() => {
     const timer = window.setInterval(() => {
       if (!hoverPaused.current && !userPaused) {
-        setActive((current) => (current + 1) % eventDeck.length);
+        setActive((current) => (current + 1) % pageCount);
       }
-    }, 4000);
+    }, 4500);
     return () => window.clearInterval(timer);
   }, [userPaused]);
 
   const move = (direction) => {
-    setActive((current) => (current + direction + eventDeck.length) % eventDeck.length);
+    setActive((current) => (current + direction + pageCount) % pageCount);
+  };
+
+  const handlePointerDown = (event) => {
+    pointerStartY.current = event.clientY;
+    event.currentTarget.setPointerCapture?.(event.pointerId);
+  };
+
+  const handlePointerUp = (event) => {
+    if (pointerStartY.current === null) return;
+    const distance = pointerStartY.current - event.clientY;
+    pointerStartY.current = null;
+    if (Math.abs(distance) >= 45) move(distance > 0 ? 1 : -1);
+  };
+
+  const handleKeyDown = (event) => {
+    if (event.key === 'ArrowDown' || event.key === 'ArrowRight') move(1);
+    if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') move(-1);
   };
 
   return (
@@ -373,43 +381,84 @@ function EventDeck() {
       onFocus={() => { hoverPaused.current = true; }}
       onBlur={() => { hoverPaused.current = false; }}
     >
-      <div className="event-deck">
-        {eventDeck.map((event, index) => {
-          const offset = (index - active + eventDeck.length) % eventDeck.length;
-          return (
-            <article
-              className={`deck-card ${event.className}`}
-              data-position={offset}
-              key={event.title}
-              aria-hidden={offset !== 0}
-            >
-              <div className="deck-noise" />
-              <span className="deck-label">{event.label}</span>
-              <div className="deck-content">
-                <span className="deck-file">PHOTO SLOT · {event.fileName}</span>
-                <h2>{event.title}</h2>
-                <p>{event.detail}</p>
-              </div>
-            </article>
-          );
-        })}
-      </div>
-      <div className="deck-controls">
-        <button type="button" aria-label="Previous event" onClick={() => move(-1)}>
-          <ArrowLeft aria-hidden="true" />
-        </button>
-        <span>{String(active + 1).padStart(2, '0')} / {String(eventDeck.length).padStart(2, '0')}</span>
-        <button
-          type="button"
-          aria-label={userPaused ? 'Resume rotating event photos' : 'Pause rotating event photos'}
-          aria-pressed={userPaused}
-          onClick={() => setUserPaused((current) => !current)}
+      <div className="phone-shell chrome-border">
+        <div
+          className="event-deck"
+          aria-label="Shuffled photos from FYP Events"
+          aria-roledescription="carousel"
+          tabIndex="0"
+          onPointerDown={handlePointerDown}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={() => { pointerStartY.current = null; }}
+          onKeyDown={handleKeyDown}
         >
-          {userPaused ? <Play aria-hidden="true" /> : <Pause aria-hidden="true" />}
-        </button>
-        <button type="button" aria-label="Next event" onClick={() => move(1)}>
-          <ArrowRight aria-hidden="true" />
-        </button>
+          <div className="explore-header">
+            <div className="phone-status">
+              <span>9:41</span>
+              <span className="phone-island" aria-hidden="true" />
+              <span className="phone-system" aria-hidden="true">
+                <i /><i /><i /><b />
+              </span>
+            </div>
+            <div className="phone-brand">
+              <strong><span><Sparkles aria-hidden="true" /></span> FYP <small>EVENTS</small></strong>
+              <button
+                type="button"
+                aria-label={userPaused ? 'Resume automatic event feed' : 'Pause automatic event feed'}
+                aria-pressed={userPaused}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  setUserPaused((current) => !current);
+                }}
+              >
+                {userPaused ? <Play aria-hidden="true" /> : <Pause aria-hidden="true" />}
+              </button>
+            </div>
+            <div className="explore-tabs" aria-hidden="true">
+              <span className="is-active">Explore</span>
+              <span>All</span>
+              <span>Live shows</span>
+            </div>
+          </div>
+          <div className="explore-scroll" aria-live="off">
+            <div className="explore-feed" style={{ '--explore-page': active }}>
+              {feedPages.map((images, pageIndex) => (
+                <section
+                  className="feed-page"
+                  key={images[0].fileName}
+                  aria-hidden={active !== pageIndex}
+                >
+                  <figure className="featured-post">
+                    <img src={images[0].image} alt={images[0].alt} />
+                    <span className="live-badge">● LIVE</span>
+                    <span className="watching-badge">Live event</span>
+                  </figure>
+                  <div className="feed-meta">
+                    <img
+                      src={`${import.meta.env.BASE_URL}images/makayla-headshot-square.webp`}
+                      alt=""
+                    />
+                    <div>
+                      <strong>Inside an FYP Events production</strong>
+                      <span>FYP Events · Made for your page</span>
+                    </div>
+                  </div>
+                  <h3 className="moments-heading"><span>✦</span> Event moments</h3>
+                  <div className="shorts-grid">
+                    {images.slice(1).map((image) => (
+                      <figure key={image.fileName}>
+                        <img src={image.image} alt={image.alt} />
+                        <Camera aria-hidden="true" />
+                        <figcaption>A moment made to share</figcaption>
+                      </figure>
+                    ))}
+                  </div>
+                </section>
+              ))}
+            </div>
+          </div>
+          <span className="swipe-hint">Swipe to explore</span>
+        </div>
       </div>
     </div>
   );
@@ -427,82 +476,6 @@ function SectionHeading({ eyebrow, title, copy }) {
   );
 }
 
-function ServiceSection() {
-  return (
-    <section className="section page-shell" id="services">
-      <SectionHeading
-        eyebrow="What we make"
-        title="Four formats. One rule."
-        copy="Every event is built around one signature moment: the thing everyone films and posts."
-      />
-      <div className="service-grid">
-        {services.map(({ title, copy, icon: Icon }, index) => (
-          <article className="service-card" key={title} data-reveal style={{ '--delay': `${index * 80}ms` }}>
-            <div className="service-icon chrome-fill"><Icon aria-hidden="true" /></div>
-            <span className="card-number">0{index + 1}</span>
-            <h3>{title}</h3>
-            <p>{copy}</p>
-          </article>
-        ))}
-      </div>
-      <div className="manifesto" data-reveal>
-        <strong>No boring events.</strong>
-        <span>No stuffy corporate mixers. No moment, no event.</span>
-      </div>
-    </section>
-  );
-}
-
-function SocialProof() {
-  const stats = [
-    ['90%', 'of Gen Z say social content inspired a recent purchase', 'Sprout Social, Q2 2025'],
-    ['72%', 'of Gen Z have bought a product directly in a social app', 'Hootsuite, citing Grin'],
-    ['61%', 'of consumers are more inclined to buy after a brand event', 'EventTrack 2026'],
-  ];
-  return (
-    <section className="section page-shell">
-      <SectionHeading
-        eyebrow="Why social-first"
-        title="The event is the content."
-        copy="We build around what your audience is already watching, so the night keeps working after the lights come up."
-      />
-      <div className="stats-grid" data-reveal>
-        {stats.map(([value, copy, source]) => (
-          <article className="stat-card" key={value}>
-            <strong className="chrome-text">{value}</strong>
-            <p>{copy}</p>
-            <cite>{source}</cite>
-          </article>
-        ))}
-      </div>
-      <p className="source-note">Industry benchmarks, not FYP Events performance results.</p>
-    </section>
-  );
-}
-
-function IdeaSection() {
-  return (
-    <section className="section page-shell">
-      <SectionHeading
-        eyebrow="What this could look like"
-        title="Big-agency ideas, without the agency."
-        copy="Built for small and mid-sized brands and influencers in NYC."
-      />
-      <div className="idea-grid">
-        {ideaCards.map((idea) => (
-          <article className="idea-card" key={idea.industry} data-reveal>
-            <span className="idea-number">{idea.number}</span>
-            <span className="idea-tag">Idea · {idea.industry}</span>
-            <h3>{idea.title}</h3>
-            <p>{idea.moment}</p>
-            <Sparkles aria-hidden="true" />
-          </article>
-        ))}
-      </div>
-    </section>
-  );
-}
-
 function OfferSection() {
   const inclusions = [
     'Concept, signature moment and creative direction',
@@ -515,8 +488,7 @@ function OfferSection() {
   return (
     <section className="section page-shell">
       <div className="offer-layout">
-        <div data-reveal>
-          <div className="eyebrow">The offer</div>
+        <div className="offer-heading" data-reveal>
           <h2>One package: start to finale.</h2>
           <p className="section-copy">A flat fee, quoted after a 30-minute consultation.</p>
         </div>
@@ -535,10 +507,10 @@ function OfferSection() {
         </div>
         <div className="why-grid">
           {[
-            ['You work with me.', 'No account team, no handoffs. I take one event at a time.'],
+            ['You work directly with me.', 'No account team, no handoffs. I manage one event at a time.'],
             ['One number, up front.', 'Flat fee. No percentage creep or agency markup.'],
-            ['Trend-driven, not trend-chasing.', 'The concept starts with what your audience is already watching.'],
-            ['Your target audience is in the room.', 'Gen Z instincts, backed by serious production planning.'],
+            ['Young, fun and fluent in what your audience is watching.', 'A Gen Z perspective with a clear read on trends, culture and how people share experiences.'],
+            ['I wear all the hats.', 'I dream up the concept, run the budget, manage the vendors and host the night, so nothing gets lost between handoffs.'],
           ].map(([title, copy]) => (
             <article key={title} data-reveal>
               <Zap aria-hidden="true" />
@@ -551,48 +523,27 @@ function OfferSection() {
   );
 }
 
-function ProcessSection() {
-  const steps = [
-    ['Consult', 'Goal, crowd and budget. Thirty minutes, free.'],
-    ['Trend scan', 'What is moving in your audience’s feeds right now.'],
-    ['The pitch', 'A concept deck built around your signature moment.'],
-    ['Planning', 'Venue, vendors, budget and run-of-show.'],
-    ['Execution', 'I run the night on site, cue to cue.'],
-    ['Afterglow', 'Photos, video and content ready to post.'],
-  ];
-  return (
-    <section className="section page-shell">
-      <SectionHeading eyebrow="How it works" title="From DM to finale." />
-      <ol className="process-list">
-        {steps.map(([title, copy], index) => (
-          <li key={title} data-reveal>
-            <span>{String(index + 1).padStart(2, '0')}</span>
-            <h3>{title}</h3>
-            <p>{copy}</p>
-          </li>
-        ))}
-      </ol>
-    </section>
-  );
-}
-
 function AboutSection() {
   return (
     <section className="section page-shell" id="about">
       <div className="about-card" data-reveal>
-        <div className="portrait chrome-border" aria-label="Photo placeholder for Makayla">
+        <div className="portrait chrome-border">
           <div className="portrait-inner">
-            <span>HEADSHOT</span>
-            <strong>M</strong>
+            <img
+              src={`${import.meta.env.BASE_URL}images/makayla-headshot-square.webp`}
+              alt="Makayla, founder and producer of FYP Events"
+            />
           </div>
         </div>
         <div>
           <span className="handle">@fypevents · founder</span>
           <h2>Meet Makayla.</h2>
           <p>
-            I love building event concepts nobody’s done before, from the first wild idea to the
-            last cue card. Years as a product manager in tech mean the chaos you see on the night
-            runs on a very serious spreadsheet.
+            I love building event concepts nobody's done before, from the first wild idea to the last cue.
+            I spent years as a product manager in tech while simultaneously starting my own event production company,
+            organizing and operating logistics for numerous events. I love seeing things come together and
+            providing jaw-dropping experiences that don't typically have a space in mainstream culture. I love to shake things up,
+            highlight local talent, and grow communities through my work.
           </p>
           <div className="tag-row">
             <span>Event host</span><span>Social butterfly</span><span>Thrill seeker</span>
@@ -605,98 +556,535 @@ function AboutSection() {
 
 function PortfolioPreview() {
   return (
-    <section className="section page-shell">
-      <SectionHeading
-        eyebrow="The work"
-        title="Formats, proven live."
-        copy="Super Sapphic is where Makayla built and tested live reality-TV formats with an audience in the room."
-      />
-      <div className="work-grid">
-        {Object.entries(caseStudies).map(([slug, item]) => (
-          <Link className={`work-card ${item.className}`} to={`/work/${slug}`} key={slug} data-reveal>
-            <span>{item.type}</span>
-            <div><h3>{item.title}</h3><p>{item.moment}</p></div>
-            <ArrowUpRight aria-hidden="true" />
-          </Link>
-        ))}
+    <section className="section page-shell last-event-section" id="past-work">
+      <div className="last-event-heading" data-reveal>
+        <span className="eyebrow">Past work</span>
+        <h2>My Last Event</h2>
       </div>
-      <Link className="text-link" to="/work">Explore all work <ArrowRight aria-hidden="true" /></Link>
+      <div className="last-event-layout">
+        <div className="last-event-frame chrome-border" data-reveal>
+          <article className="last-event-feature">
+            <img
+              src={`${import.meta.env.BASE_URL}images/last-event-side-04.webp`}
+              alt="Love Island: Sapphic Edition live on stage at Three Dollar Bill"
+              loading="lazy"
+              decoding="async"
+            />
+            <div className="last-event-overlay">
+              <p className="last-event-meta">Three Dollar Bill, Brooklyn · August 9, 2026</p>
+              <h3>Love Island: Sapphic Edition</h3>
+              <p className="last-event-description">
+                <span>The reality-TV event of the summer, brought live and on stage for a queer NYC audience.</span>
+                <br />
+                <span>Complete with bombshells, live audience voting and a cash prize.</span>
+              </p>
+              <a
+                className="last-event-link"
+                href="https://www.instagram.com/supersapphiccc/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Instagram aria-hidden="true" />
+                See more of my events — follow me on Instagram
+                <ArrowUpRight aria-hidden="true" />
+              </a>
+            </div>
+          </article>
+        </div>
+      </div>
     </section>
   );
 }
 
-function QuoteSection({ compact = false }) {
+const eventTypeOptions = [
+  'Party',
+  'Brand activation',
+  'Product launch',
+  'Creator event',
+  'Live show',
+  'Pop-up',
+  'Launch party',
+  'Birthday or celebration',
+  'Live podcast',
+  'Premiere',
+  'Fashion event',
+  'Other',
+];
+
+function QuoteExperience() {
+  return (
+    <>
+      <QuoteCalculator />
+      <InquirySection />
+    </>
+  );
+}
+
+function QuoteCalculator() {
+  const [step, setStep] = useState(0);
+  const [answers, setAnswers] = useState({
+    eventName: '',
+    eventTypes: [],
+    budget: '',
+    guests: '',
+    date: '',
+    venue: '',
+    description: '',
+    audience: '',
+  });
+  const [submitStatus, setSubmitStatus] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const stepHeadingRef = useRef(null);
+  const hasNavigated = useRef(false);
+  const endpoint = import.meta.env.VITE_FORMSPREE_ENDPOINT;
+  const questionCount = 6;
+  const isResult = step === questionCount;
+  const isQuoteContact = step === questionCount + 1;
+  const guestCount = Number(answers.guests);
+  const budgetAmount = Number(answers.budget);
+  const quoteRange = guestCount > 400 || budgetAmount > 15000 ? '$2,000–$4,000' : '$500–$1,000';
+  const today = useMemo(() => {
+    const now = new Date();
+    const localDate = new Date(now.getTime() - now.getTimezoneOffset() * 60_000);
+    return localDate.toISOString().slice(0, 10);
+  }, []);
+
+  useEffect(() => {
+    if (hasNavigated.current) stepHeadingRef.current?.focus();
+  }, [step]);
+
+  function updateAnswer(name, value) {
+    setAnswers((current) => ({ ...current, [name]: value }));
+  }
+
+  function advance(event) {
+    event.preventDefault();
+    hasNavigated.current = true;
+    setStep((current) => Math.min(current + 1, questionCount));
+  }
+
+  function goBack() {
+    hasNavigated.current = true;
+    setStep((current) => Math.max(current - 1, 0));
+  }
+
+  function toggleEventType(option) {
+    setAnswers((current) => ({
+      ...current,
+      eventTypes: current.eventTypes.includes(option)
+        ? current.eventTypes.filter((item) => item !== option)
+        : [...current.eventTypes, option],
+    }));
+  }
+
+  async function handleQuoteSubmit(event) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    if (!endpoint) {
+      setSubmitStatus('Your form is ready. Add a Formspree endpoint before launch to receive submissions.');
+      return;
+    }
+    setSubmitting(true);
+    setSubmitStatus('Sending...');
+    try {
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: { Accept: 'application/json' },
+      });
+      if (!response.ok) {
+        setSubmitStatus('That did not send. Please check your details and try again.');
+        return;
+      }
+      setSubmitted(true);
+      setSubmitStatus('Inquiry sent. Makayla will reply within 2 business days.');
+    } catch {
+      setSubmitStatus('The form could not connect. Please check your internet connection and try again.');
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  return (
+    <section className="section page-shell quote-builder" id="quote">
+      <SectionHeading
+        title="Get a Quote"
+        copy="Answer a few quick questions and get an estimated production range instantly."
+      />
+      <div className="quote-wizard" data-reveal>
+        <div className="quote-progress">
+          <span>
+            {isResult
+              ? 'Your estimate'
+              : isQuoteContact
+                ? 'Submit inquiry'
+                : `Question ${step + 1} of ${questionCount}`}
+          </span>
+          <progress
+            aria-label="Quote questionnaire progress"
+            max={questionCount}
+            value={isResult || isQuoteContact ? questionCount : step + 1}
+          />
+        </div>
+
+        {!isResult && !isQuoteContact && (
+          <form className="quote-step" onSubmit={advance}>
+            {step === 0 && (
+              <>
+                <div>
+                  <span className="quote-step-number">01</span>
+                  <h3 ref={stepHeadingRef} tabIndex="-1">Get a Quote</h3>
+                  <p className="quote-primary-prompt">What are we creating?</p>
+                  <p>Give the event a working name and choose every format that applies.</p>
+                </div>
+                <Field
+                  label="Event name or concept"
+                  name="eventName"
+                  required
+                  value={answers.eventName}
+                  onChange={(event) => updateAnswer('eventName', event.target.value)}
+                  placeholder="Summer product launch"
+                />
+                <MultiChoiceGroup
+                  label="Event type — select all that apply"
+                  options={eventTypeOptions}
+                  values={answers.eventTypes}
+                  onChange={toggleEventType}
+                />
+              </>
+            )}
+
+            {step === 1 && (
+              <>
+                <div>
+                  <span className="quote-step-number">02</span>
+                  <h3 ref={stepHeadingRef} tabIndex="-1">What budget are you working with?</h3>
+                  <p>Enter the total event budget you expect to work within.</p>
+                </div>
+                <Field
+                  label="Event budget (USD)"
+                  name="budget"
+                  type="number"
+                  min="1"
+                  step="1"
+                  required
+                  value={answers.budget}
+                  onChange={(event) => updateAnswer('budget', event.target.value)}
+                  placeholder="15000"
+                />
+              </>
+            )}
+
+            {step === 2 && (
+              <>
+                <div>
+                  <span className="quote-step-number">03</span>
+                  <h3 ref={stepHeadingRef} tabIndex="-1">How many people are coming?</h3>
+                  <p>Your estimated guest count determines the starting production range.</p>
+                </div>
+                <Field
+                  label="Estimated guest count"
+                  name="guests"
+                  type="number"
+                  min="1"
+                  required
+                  value={answers.guests}
+                  onChange={(event) => updateAnswer('guests', event.target.value)}
+                  placeholder="150"
+                />
+              </>
+            )}
+
+            {step === 3 && (
+              <>
+                <div>
+                  <span className="quote-step-number">04</span>
+                  <h3 ref={stepHeadingRef} tabIndex="-1">When is the event?</h3>
+                  <p>Choose the closest date if the final timing is not locked yet.</p>
+                </div>
+                <Field
+                  label="Event date"
+                  name="date"
+                  type="date"
+                  min={today}
+                  required
+                  value={answers.date}
+                  onChange={(event) => updateAnswer('date', event.target.value)}
+                />
+              </>
+            )}
+
+            {step === 4 && (
+              <>
+                <div>
+                  <span className="quote-step-number">05</span>
+                  <h3 ref={stepHeadingRef} tabIndex="-1">Do you have a venue in mind?</h3>
+                  <p>Share a venue, neighborhood or simply tell us you need recommendations.</p>
+                </div>
+                <Field
+                  label="Venue of interest"
+                  name="venue"
+                  required
+                  value={answers.venue}
+                  onChange={(event) => updateAnswer('venue', event.target.value)}
+                  placeholder="Rooftop, outdoor space or nightlife venue"
+                />
+              </>
+            )}
+
+            {step === 5 && (
+              <>
+                <div>
+                  <span className="quote-step-number">06</span>
+                  <h3 ref={stepHeadingRef} tabIndex="-1">Tell us about the experience.</h3>
+                  <p>What should happen, who is it for and what should guests remember?</p>
+                </div>
+                <label className="quote-textarea">
+                  <span>Event description *</span>
+                  <textarea
+                    name="description"
+                    required
+                    rows="4"
+                    value={answers.description}
+                    onChange={(event) => updateAnswer('description', event.target.value)}
+                    placeholder="Describe the event format, goals and key moments."
+                  />
+                </label>
+                <label className="quote-textarea">
+                  <span>Target audience *</span>
+                  <textarea
+                    name="audience"
+                    required
+                    rows="3"
+                    value={answers.audience}
+                    onChange={(event) => updateAnswer('audience', event.target.value)}
+                    placeholder="Creators, customers, press, local community or another audience."
+                  />
+                </label>
+              </>
+            )}
+
+            <div className="quote-actions">
+              {step > 0 && (
+                <button className="button quote-back" type="button" onClick={goBack}>
+                  <ArrowLeft aria-hidden="true" /> Back
+                </button>
+              )}
+              <button
+                className="button button-primary quote-next"
+                type="submit"
+                disabled={step === 0 && answers.eventTypes.length === 0}
+              >
+                {step === questionCount - 1 ? 'See my quote' : 'Next'}
+                <ArrowRight aria-hidden="true" />
+              </button>
+            </div>
+          </form>
+        )}
+
+        {isResult && (
+          <div className="quote-result" aria-live="polite">
+            <span className="quote-step-number">Estimated production range</span>
+            <h3 ref={stepHeadingRef} tabIndex="-1">{quoteRange}</h3>
+            <p>
+              Based on {guestCount.toLocaleString()} guests and a ${budgetAmount.toLocaleString()} event
+              budget for {answers.eventName}.
+              Your final flat fee is confirmed after a 30-minute consultation.
+            </p>
+            <div className="quote-includes">
+              <strong>This includes:</strong>
+              <ul>
+                <li><Check aria-hidden="true" /> Consultation</li>
+                <li><Check aria-hidden="true" /> Concept building</li>
+                <li><Check aria-hidden="true" /> Prep and planning</li>
+                <li><Check aria-hidden="true" /> Day-of execution</li>
+              </ul>
+            </div>
+            <div className="quote-actions">
+              <button className="button quote-back" type="button" onClick={goBack}>
+                <ArrowLeft aria-hidden="true" /> Edit answers
+              </button>
+              <button
+                className="button button-primary quote-next"
+                type="button"
+                onClick={() => {
+                  hasNavigated.current = true;
+                  setStep(questionCount + 1);
+                }}
+              >
+                Submit inquiry <ArrowRight aria-hidden="true" />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {isQuoteContact && (
+          submitted ? (
+            <div className="quote-result quote-confirmation" aria-live="polite">
+              <span className="quote-step-number">Inquiry sent</span>
+              <h3 ref={stepHeadingRef} tabIndex="-1">You’re on the list.</h3>
+              <p>Makayla received your complete event brief and contact information.</p>
+            </div>
+          ) : (
+            <form className="quote-step quote-contact-step" onSubmit={handleQuoteSubmit}>
+              <div>
+                <span className="quote-step-number">Final step</span>
+                <h3 ref={stepHeadingRef} tabIndex="-1">Where should we follow up?</h3>
+                <p>Your quote answers are saved and will be included automatically.</p>
+              </div>
+              <input type="hidden" name="_subject" value={`New quote inquiry: ${answers.eventName}`} />
+              <input type="hidden" name="estimatedQuote" value={quoteRange} />
+              <input type="hidden" name="eventName" value={answers.eventName} />
+              <input type="hidden" name="eventTypes" value={answers.eventTypes.join(', ')} />
+              <input type="hidden" name="eventBudget" value={`$${budgetAmount.toLocaleString()}`} />
+              <input type="hidden" name="guestCount" value={answers.guests} />
+              <input type="hidden" name="eventDate" value={answers.date} />
+              <input type="hidden" name="venue" value={answers.venue} />
+              <input type="hidden" name="eventDescription" value={answers.description} />
+              <input type="hidden" name="targetAudience" value={answers.audience} />
+              <div className="quote-contact-grid">
+                <Field
+                  label="Name"
+                  name="name"
+                  required
+                  autoComplete="name"
+                  placeholder="Jordan Lee"
+                />
+                <Field
+                  label="Company"
+                  name="company"
+                  autoComplete="organization"
+                  placeholder="Company or creator name"
+                />
+                <Field
+                  label="Email"
+                  name="email"
+                  required
+                  type="email"
+                  autoComplete="email"
+                  placeholder="jordan@example.com"
+                />
+                <Field
+                  label="Phone"
+                  name="phone"
+                  required
+                  type="tel"
+                  autoComplete="tel"
+                  placeholder="(212) 555-0123"
+                />
+              </div>
+              <div className="quote-actions quote-submit-actions">
+                <button className="button quote-back" type="button" onClick={goBack}>
+                  <ArrowLeft aria-hidden="true" /> Back to quote
+                </button>
+                <button className="button button-primary quote-next" type="submit" disabled={submitting}>
+                  {submitting ? 'Sending...' : 'Send full inquiry'} <Send aria-hidden="true" />
+                </button>
+              </div>
+              <p className="quote-submit-status" role="status" aria-live="polite">
+                {submitStatus || 'Your information is only used to respond to this event inquiry.'}
+              </p>
+            </form>
+          )
+        )}
+      </div>
+    </section>
+  );
+}
+
+function MultiChoiceGroup({ label, options, values, onChange }) {
+  return (
+    <fieldset className="choice-group">
+      <legend>{label} *</legend>
+      <div className="choice-grid">
+        {options.map((option) => (
+          <button
+            className={values.includes(option) ? 'choice-button is-selected' : 'choice-button'}
+            type="button"
+            aria-pressed={values.includes(option)}
+            onClick={() => onChange(option)}
+            key={option}
+          >
+            {option}
+            {values.includes(option) && <Check aria-hidden="true" />}
+          </button>
+        ))}
+      </div>
+    </fieldset>
+  );
+}
+
+function InquirySection() {
   const [status, setStatus] = useState('');
+  const [submitting, setSubmitting] = useState(false);
   const endpoint = import.meta.env.VITE_FORMSPREE_ENDPOINT;
 
   async function handleSubmit(event) {
     event.preventDefault();
+    const form = event.currentTarget;
     if (!endpoint) {
       setStatus('Your form is ready. Add a Formspree endpoint before launch to receive submissions.');
       return;
     }
+    setSubmitting(true);
     setStatus('Sending...');
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      body: new FormData(event.currentTarget),
-      headers: { Accept: 'application/json' },
-    });
-    if (!response.ok) {
-      setStatus('That did not send. Please try again or contact FYP Events directly.');
-      return;
+    try {
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: { Accept: 'application/json' },
+      });
+      if (!response.ok) {
+        setStatus('That did not send. Please check your details and try again.');
+        return;
+      }
+      form.reset();
+      setStatus('Inquiry sent. Makayla will reply within 2 business days.');
+    } catch {
+      setStatus('The form could not connect. Please check your internet connection and try again.');
+    } finally {
+      setSubmitting(false);
     }
-    event.currentTarget.reset();
-    setStatus('Got it. Makayla reads every one herself and replies within 2 business days.');
   }
 
   return (
-    <section className={`section page-shell quote-section ${compact ? 'is-compact' : ''}`}>
+    <section className="section page-shell inquiry-section" id="work-together">
       <SectionHeading
-        eyebrow="Get a quote"
-        title="Slide into the DMs."
-        copy="Got an idea that’s too weird for everyone else? Perfect."
+        eyebrow="Let’s work together"
+        title="Ready to make it real?"
+        copy="Already know what you need? Send the concept and I will follow up within 2 business days."
       />
-      <form className="quote-form" onSubmit={handleSubmit}>
-        <div className="dm-header">
-          <div className="dm-avatar chrome-fill">FYP</div>
-          <div><strong>FYP Events</strong><span>Typically replies within 2 business days</span></div>
-        </div>
-        <p className="dm-bubble">What should everyone be talking about the next morning?</p>
-        <div className="form-grid">
-          <Field label="Name" name="name" required placeholder="Jordan Lee" />
-          <Field label="Email" name="email" required type="email" placeholder="jordan@brand.com" />
-          <Field label="Company" name="company" placeholder="Brand or creator name" />
-          <label>
-            <span>Event type</span>
-            <select name="eventType" defaultValue="Brand activation">
-              <option>Brand activation</option><option>Pop-up</option><option>Live show</option><option>Party</option>
-            </select>
-            <ChevronDown aria-hidden="true" />
-          </label>
-          <Field label="Date or season" name="date" placeholder="Spring 2027" />
-          <Field label="Guest count" name="guests" inputMode="numeric" placeholder="150" />
+      <form className="inquiry-form" onSubmit={handleSubmit}>
+        <input type="hidden" name="_subject" value="New FYP Events inquiry" />
+        <div className="contact-grid">
+          <Field label="Name" name="name" required autoComplete="name" placeholder="Jordan Lee" />
+          <Field label="Company" name="company" autoComplete="organization" placeholder="Brand or creator name" />
+          <Field
+            className="full-field"
+            label="Event name or concept"
+            name="eventName"
+            required
+            placeholder="Summer product launch"
+          />
+          <Field label="Email" name="email" required type="email" autoComplete="email" placeholder="jordan@brand.com" />
+          <Field label="Phone" name="phone" required type="tel" autoComplete="tel" placeholder="(212) 555-0123" />
           <label className="full-field">
-            <span>Budget range *</span>
-            <select name="budget" required defaultValue="">
-              <option value="" disabled>Select a range</option>
-              <option>Under $5k</option><option>$5–15k</option><option>$15–30k</option>
-              <option>$30–50k</option><option>$50k+</option>
-            </select>
-            <ChevronDown aria-hidden="true" />
-          </label>
-          <label className="full-field">
-            <span>The signature moment</span>
+            <span>Tell us more *</span>
             <textarea
-              name="moment"
-              rows="4"
-              placeholder="The CEO walks out as the surprise final contestant..."
+              name="message"
+              rows="6"
+              required
+              placeholder="Describe the event, goals, audience and preferred timing."
             />
           </label>
         </div>
-        <div className="form-footer">
-          <p role="status" aria-live="polite">{status || 'No spam. No account team. Just Makayla.'}</p>
-          <button className="button button-primary" type="submit">
-            Send inquiry <Send aria-hidden="true" />
+        <div className="inquiry-footer">
+          <p role="status" aria-live="polite">
+            {status || 'Your information is only used to respond to this event inquiry.'}
+          </p>
+          <button className="button button-primary" type="submit" disabled={submitting}>
+            {submitting ? 'Sending...' : 'Submit inquiry'} <Send aria-hidden="true" />
           </button>
         </div>
       </form>
@@ -704,109 +1092,20 @@ function QuoteSection({ compact = false }) {
   );
 }
 
-function Field({ label, ...inputProps }) {
+function Field({ label, className = '', ...inputProps }) {
   return (
-    <label>
+    <label className={className}>
       <span>{label}{inputProps.required ? ' *' : ''}</span>
       <input {...inputProps} />
     </label>
   );
 }
 
-function WorkPage() {
-  return (
-    <div className="subpage page-shell">
-      <div className="page-hero" data-reveal>
-        <div className="eyebrow">Selected work</div>
-        <h1>Built in public.<br /><span className="chrome-text">Tested live.</span></h1>
-        <p>
-          Super Sapphic is Makayla’s queer entertainment production company, specializing in
-          reality-TV formats with live audiences. It is where the formats were built and tested.
-        </p>
-      </div>
-      <div className="case-list">
-        {Object.entries(caseStudies).map(([slug, item], index) => (
-          <Link to={`/work/${slug}`} className="case-row" key={slug} data-reveal>
-            <span className="case-index">0{index + 1}</span>
-            <div className={`case-image ${item.className}`}>
-              <Camera aria-hidden="true" /><span>{eventDeck[index].fileName}</span>
-            </div>
-            <div className="case-copy">
-              <span>{item.type}</span>
-              <h2>{item.title}</h2>
-              <p>{item.moment}</p>
-            </div>
-            <ArrowUpRight aria-hidden="true" />
-          </Link>
-        ))}
-      </div>
-      <QuoteBanner />
-    </div>
-  );
-}
-
-function CaseStudyPage() {
-  const { slug } = useParams();
-  const item = caseStudies[slug];
-  if (!item) return <WorkPage />;
-  return (
-    <div className="subpage page-shell">
-      <Link className="back-link" to="/work"><ArrowLeft aria-hidden="true" /> All work</Link>
-      <div className="case-hero" data-reveal>
-        <div>
-          <span className="eyebrow">{item.type}</span>
-          <h1>{item.title}</h1>
-          <p>{item.summary}</p>
-        </div>
-        <div className={`case-visual ${item.className}`}>
-          <Camera aria-hidden="true" />
-          <span>Replace with event photography</span>
-        </div>
-      </div>
-      <section className="case-details" data-reveal>
-        <div>
-          <span className="detail-label">The signature moment</span>
-          <h2>{item.moment}</h2>
-        </div>
-        <dl>
-          <div><dt>Location</dt><dd>{item.location}</dd></div>
-          <div><dt>Date</dt><dd>{item.date}</dd></div>
-        </dl>
-      </section>
-      <section className="production-section" data-reveal>
-        <div>
-          <span className="eyebrow">What Makayla produced</span>
-          <h2>Fun in front.<br />Buttoned up backstage.</h2>
-        </div>
-        <ul>
-          {item.produced.map((piece) => <li key={piece}><Check aria-hidden="true" />{piece}</li>)}
-        </ul>
-      </section>
-      <div className="photo-strip" aria-label="Event photo placeholders">
-        {[1, 2, 3].map((number) => (
-          <div className={item.className} key={number} data-reveal>
-            <Camera aria-hidden="true" /><span>PHOTO {number}</span>
-          </div>
-        ))}
-      </div>
-      <QuoteBanner />
-    </div>
-  );
-}
-
-function QuoteBanner() {
-  return (
-    <section className="quote-banner" data-reveal>
-      <div><span className="eyebrow">Your turn</span><h2>Let’s make the moment.</h2></div>
-      <Link className="button button-primary" to="/quote">Book a consultation <ArrowUpRight aria-hidden="true" /></Link>
-    </section>
-  );
-}
-
 function QuotePage() {
   return (
     <div className="subpage">
-      <QuoteSection />
+      <h1 className="sr-only">Get a Quote</h1>
+      <QuoteExperience />
     </div>
   );
 }
@@ -816,15 +1115,8 @@ function SiteFooter() {
     <footer className="site-footer">
       <div className="page-shell footer-grid">
         <Link className="wordmark" to="/"><span className="chrome-text">FYP</span><span>EVENTS</span></Link>
-        <p>New York City · Made for your page. Built to go viral.</p>
-        <div className="social-links">
-          <span className="social-placeholder">
-            <Instagram aria-hidden="true" /><span className="sr-only">Instagram link coming soon</span>
-          </span>
-          <span className="social-placeholder">
-            <Share2 aria-hidden="true" /><span className="sr-only">TikTok link coming soon</span>
-          </span>
-        </div>
+        <p className="footer-tagline">New York City · Made for your page. Built to go viral.</p>
+        <p className="footer-creative"><Sparkles aria-hidden="true" /> Powered by local queer artists and creatives.</p>
         <small>© 2026 FYP Events. All rights reserved.</small>
       </div>
     </footer>
