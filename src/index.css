@@ -376,6 +376,12 @@ h1, h2, h3 { font-family: var(--display); text-wrap: balance; }
 .quote-step input, .quote-step textarea, .quote-contact-grid input, .contact-grid input, .contact-grid textarea { width: 100%; border: 1px solid #34343e; border-radius: 14px; outline: none; color: var(--text); background: var(--ink); padding: 16px 17px; font: 500 18px var(--body); letter-spacing: normal; text-transform: none; }
 .quote-step input:focus, .quote-step textarea:focus, .quote-contact-grid input:focus, .contact-grid input:focus, .contact-grid textarea:focus { border-color: #fff; box-shadow: 0 0 0 3px rgba(255,255,255,.1); }
 .quote-step input[type="number"], .quote-step input[type="date"] { max-width: 430px; min-height: 62px; }
+.revenue-share-option { max-width: 760px; display: grid; gap: 18px; padding: 24px; border: 1px solid rgba(255,43,69,.3); border-radius: 18px; background: rgba(255,43,69,.07); }
+.revenue-share-option strong, .revenue-share-result strong { display: block; color: var(--text); font: 700 22px var(--display); }
+.revenue-share-option p, .revenue-share-result p { margin: 7px 0 0; color: #b9b9c3; font-size: 17px; line-height: 1.5; }
+.quote-step .revenue-share-checkbox { display: grid; grid-template-columns: 22px minmax(0, 1fr); align-items: start; gap: 13px; color: #dedee4; font: 600 16px/1.45 var(--body); letter-spacing: normal; text-transform: none; cursor: pointer; }
+.quote-step .revenue-share-checkbox input { width: 22px; height: 22px; margin: 1px 0 0; padding: 0; accent-color: var(--red-ui); cursor: pointer; }
+.revenue-share-result { max-width: 760px; padding: 22px 24px; border-left: 4px solid var(--red); border-radius: 0 16px 16px 0; background: rgba(255,43,69,.08); }
 .quote-textarea + .quote-textarea { margin-top: 0; }
 .quote-step textarea { min-height: 120px; resize: vertical; }
 .choice-group { margin: 0; padding: 0; border: 0; }

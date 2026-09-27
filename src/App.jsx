@@ -626,6 +626,7 @@ function QuoteCalculator() {
     eventName: '',
     eventTypes: [],
     budget: '',
+    revenueShareInterested: false,
     guests: '',
     date: '',
     venue: '',
@@ -773,6 +774,28 @@ function QuoteCalculator() {
                   onChange={(event) => updateAnswer('budget', event.target.value)}
                   placeholder="15000"
                 />
+                <div className="revenue-share-option">
+                  <div>
+                    <strong>Working with a smaller budget?</strong>
+                    <p>
+                      Small businesses and creators can choose a revenue-share plan. Limited budget?
+                      Let&apos;s split the ticket sales. Our revenue-share plan is built for small
+                      businesses and creators.
+                    </p>
+                  </div>
+                  <label className="revenue-share-checkbox">
+                    <input
+                      name="revenueShareInterested"
+                      type="checkbox"
+                      checked={answers.revenueShareInterested}
+                      onChange={(event) => updateAnswer('revenueShareInterested', event.target.checked)}
+                    />
+                    <span>
+                      I&apos;m a small business or creator and I&apos;m interested in the revenue-share
+                      plan (a percentage of ticket sales).
+                    </span>
+                  </label>
+                </div>
               </>
             )}
 
@@ -901,6 +924,15 @@ function QuoteCalculator() {
                 <li><Check aria-hidden="true" /> Day-of execution</li>
               </ul>
             </div>
+            {answers.revenueShareInterested && (
+              <div className="revenue-share-result">
+                <strong>Small business or creator?</strong>
+                <p>
+                  You selected the revenue-share plan. We&apos;ll discuss splitting ticket sales as
+                  part of your consultation.
+                </p>
+              </div>
+            )}
             <div className="quote-actions">
               <button className="button quote-back" type="button" onClick={goBack}>
                 <ArrowLeft aria-hidden="true" /> Edit answers
@@ -938,6 +970,11 @@ function QuoteCalculator() {
               <input type="hidden" name="eventName" value={answers.eventName} />
               <input type="hidden" name="eventTypes" value={answers.eventTypes.join(', ')} />
               <input type="hidden" name="eventBudget" value={`$${budgetAmount.toLocaleString()}`} />
+              <input
+                type="hidden"
+                name="revenueShareInterested"
+                value={answers.revenueShareInterested ? 'Yes' : 'No'}
+              />
               <input type="hidden" name="guestCount" value={answers.guests} />
               <input type="hidden" name="eventDate" value={answers.date} />
               <input type="hidden" name="venue" value={answers.venue} />
