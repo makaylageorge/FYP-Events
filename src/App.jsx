@@ -34,6 +34,22 @@ function shuffled(items) {
   return result;
 }
 
+function formatCurrency(amount) {
+  return `$${Math.round(amount).toLocaleString('en-US')}`;
+}
+
+function calculateQuoteRange(guestCount, budgetAmount) {
+  const maximumFee = Math.max(1, Math.floor(budgetAmount / 2));
+  const useLargerEventRange = budgetAmount >= 2000 && (guestCount > 500 || budgetAmount > 15000);
+  const baseMinimum = useLargerEventRange ? 2000 : 500;
+  const baseMaximum = useLargerEventRange ? 4000 : 1000;
+  const minimum = Math.min(baseMinimum, maximumFee);
+  const maximum = Math.min(baseMaximum, maximumFee);
+
+  if (minimum === maximum) return `Up to ${formatCurrency(maximum)}`;
+  return `${formatCurrency(minimum)}–${formatCurrency(maximum)}`;
+}
+
 function App() {
   const location = useLocation();
   const [showIntro, setShowIntro] = useState(
@@ -585,7 +601,7 @@ function PortfolioPreview() {
                 rel="noopener noreferrer"
               >
                 <Instagram aria-hidden="true" />
-                See more of my events — follow me on Instagram
+                <span>See more from Super Sapphic</span>
                 <ArrowUpRight aria-hidden="true" />
               </a>
             </div>
@@ -644,7 +660,7 @@ function QuoteCalculator() {
   const isQuoteContact = step === questionCount + 1;
   const guestCount = Number(answers.guests);
   const budgetAmount = Number(answers.budget);
-  const quoteRange = guestCount > 400 || budgetAmount > 15000 ? '$2,000–$4,000' : '$500–$1,000';
+  const quoteRange = calculateQuoteRange(guestCount, budgetAmount);
   const today = useMemo(() => {
     const now = new Date();
     const localDate = new Date(now.getTime() - now.getTimezoneOffset() * 60_000);
@@ -699,7 +715,7 @@ function QuoteCalculator() {
         return;
       }
       setSubmitted(true);
-      setSubmitStatus('Inquiry sent. Makayla will reply within 2 business days.');
+      setSubmitStatus('Inquiry sent. I’ll get back to you within 24 hours.');
     } catch {
       setSubmitStatus('The form could not connect. Please check your internet connection and try again.');
     } finally {
@@ -776,6 +792,7 @@ function QuoteCalculator() {
                 />
                 <div className="revenue-share-option">
                   <div>
+                    <span className="revenue-share-label">Small-business pricing</span>
                     <strong>Working with a smaller budget?</strong>
                     <p>
                       Small businesses and creators can choose a revenue-share plan. Limited budget?
@@ -907,14 +924,42 @@ function QuoteCalculator() {
         )}
 
         {isResult && (
-          <div className="quote-result" aria-live="polite">
-            <span className="quote-step-number">Estimated production range</span>
-            <h3 ref={stepHeadingRef} tabIndex="-1">{quoteRange}</h3>
-            <p>
-              Based on {guestCount.toLocaleString()} guests and a ${budgetAmount.toLocaleString()} event
-              budget for {answers.eventName}.
-              Your final flat fee is confirmed after a 30-minute consultation.
-            </p>
+          <div
+            className={`quote-result ${answers.revenueShareInterested ? 'revenue-share-quote-result' : ''}`}
+            aria-live="polite"
+          >
+            {answers.revenueShareInterested ? (
+              <>
+                <span className="quote-step-number">Small-business pricing</span>
+                <h3 ref={stepHeadingRef} tabIndex="-1">Choose your plan.</h3>
+                <div className="revenue-share-pricing">
+                  <div>
+                    <span>Flat production fee</span>
+                    <strong>{quoteRange}</strong>
+                  </div>
+                  <b>or</b>
+                  <div>
+                    <span>Revenue-share plan</span>
+                    <strong>33–40%</strong>
+                    <small>of ticket sales</small>
+                  </div>
+                </div>
+                <p>
+                  Choose the capped flat-fee quote or share ticket revenue. We&apos;ll confirm the best
+                  fit after a 30-minute consultation.
+                </p>
+              </>
+            ) : (
+              <>
+                <span className="quote-step-number">Estimated production range</span>
+                <h3 ref={stepHeadingRef} tabIndex="-1">{quoteRange}</h3>
+                <p>
+                  Based on {guestCount.toLocaleString()} guests and a ${budgetAmount.toLocaleString()} event
+                  budget for {answers.eventName}. This estimate will never exceed half of your event budget.
+                  Your final flat fee is confirmed after a 30-minute consultation.
+                </p>
+              </>
+            )}
             <div className="quote-includes">
               <strong>This includes:</strong>
               <ul>
@@ -924,15 +969,6 @@ function QuoteCalculator() {
                 <li><Check aria-hidden="true" /> Day-of execution</li>
               </ul>
             </div>
-            {answers.revenueShareInterested && (
-              <div className="revenue-share-result">
-                <strong>Small business or creator?</strong>
-                <p>
-                  You selected the revenue-share plan. We&apos;ll discuss splitting ticket sales as
-                  part of your consultation.
-                </p>
-              </div>
-            )}
             <div className="quote-actions">
               <button className="button quote-back" type="button" onClick={goBack}>
                 <ArrowLeft aria-hidden="true" /> Edit answers
@@ -956,7 +992,7 @@ function QuoteCalculator() {
             <div className="quote-result quote-confirmation" aria-live="polite">
               <span className="quote-step-number">Inquiry sent</span>
               <h3 ref={stepHeadingRef} tabIndex="-1">You’re on the list.</h3>
-              <p>Makayla received your complete event brief and contact information.</p>
+              <p>I received your complete event brief and will get back to you within 24 hours.</p>
             </div>
           ) : (
             <form className="quote-step quote-contact-step" onSubmit={handleQuoteSubmit}>
@@ -974,6 +1010,11 @@ function QuoteCalculator() {
                 type="hidden"
                 name="revenueShareInterested"
                 value={answers.revenueShareInterested ? 'Yes' : 'No'}
+              />
+              <input
+                type="hidden"
+                name="revenueShareOffer"
+                value={answers.revenueShareInterested ? `${quoteRange} or 33–40% of ticket sales` : 'Not selected'}
               />
               <input type="hidden" name="guestCount" value={answers.guests} />
               <input type="hidden" name="eventDate" value={answers.date} />
@@ -1077,7 +1118,7 @@ function InquirySection() {
         return;
       }
       form.reset();
-      setStatus('Inquiry sent. Makayla will reply within 2 business days.');
+      setStatus('Inquiry sent. I’ll get back to you within 24 hours.');
     } catch {
       setStatus('The form could not connect. Please check your internet connection and try again.');
     } finally {
@@ -1090,7 +1131,7 @@ function InquirySection() {
       <SectionHeading
         eyebrow="Let’s work together"
         title="Ready to make it real?"
-        copy="Already know what you need? Send the concept and I will follow up within 2 business days."
+        copy="Already know what you need? Send the concept and I’ll get back to you within 24 hours."
       />
       <form className="inquiry-form" onSubmit={handleSubmit}>
         <input type="hidden" name="_subject" value="New FYP Events inquiry" />
